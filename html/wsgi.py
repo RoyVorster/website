@@ -6,28 +6,30 @@ Main page with form and button
 '''
 
 from jinja2 import Template
+import os.path
 
-class Application:
+class application:
     def __init__(self, environ, start_response):
         self.environ, self.start_response = environ, start_response
 
     def __iter__(self):
-        self.start_response(get_status(), get_response_header())
-
+        self.start_response(self.get_status(), self.get_response_header())
 
         html = self.render()
         yield str.encode(html)
 
     def render(self):
-        with open('index.html.j2') as f:
+        with open(get_file('index.html.j2')) as f:
             page = Template(f.read())
 
-        page.render(some_text='lol')
+        return page.render(some_text='lol')
 
-        return page
-
-    def get_status():
+    def get_status(self):
         return '200 OK'
 
-    def get_response_header():
+    def get_response_header(self):
         return [('Content-type','text/html')]
+
+def get_file(f_name):
+    root = os.path.realpath(os.path.dirname(__file__))
+    return os.path.join(root, f_name)
