@@ -26,6 +26,11 @@ class application:
 
 
 # Render
+class Note:
+    def __init__(self, text, date):
+        self.text = text
+        self.date = date
+
 def render():
     d_name = get_file_name('articles')
     ns = parse_notes(d_name)
