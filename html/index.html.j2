@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="./theme.css">
     <style>
         #main_page {
-            margin: 0px 7% 0px 3%;
+            margin: 0px 7.5% 0px 1%;
             overflow: auto;
         }
 
@@ -12,7 +12,7 @@
         /* Text input */
         .input_main {
             order: 2;
-            width: 92%;
+            width: 85%;
             margin-left: 2%;
         }
 
@@ -34,28 +34,35 @@
             order: 2;
             padding-left: 2%;
             border-left: 1px solid black;
-            width: 92%;
+            width: 85%;
         }
 
         .article_meta {
             order: 1;
-            width: 8%;
+            width: 13%;
         }
     </style>
+
+    <script>
+        if (window.history.replaceState) { window.history.replaceState(null, null, window.location.href); }
+    </script>
+
 </head>
 <body>
     <section id="main_page">
         <!-- Textarea -->
-        <div class="main_singleton">
-            <div class="article_meta"></div>
-            <textarea class="input_main" rows=10></textarea>
-        </div>
+        <form method='POST'>
+            <div class="main_singleton">
+                <div class="article_meta"></div>
+                <textarea class="input_main" name="input" rows=10></textarea>
+            </div>
 
-        <!-- Button -->
-        <div class="main_singleton">
-            <div class="article_meta"></div>
-            <button class="input_main">Submit</button>
-        </div>
+            <!-- Button -->
+            <div class="main_singleton">
+                <div class="article_meta"></div>
+                <button class="input_main">Submit</button>
+            </div>
+        </form>
 
         <!-- Notes -->
         {% for note in notes %}
@@ -66,8 +73,9 @@
             </div>
 
             <div class="article_meta">
-                No. {{ loop.index }} <br>
-                {{ note.date }}
+                No. {{ loop.length - loop.index + 1 }} <br>
+                {{ note.date }} <br>
+                {{ note.time }}
             </div>
         </div>
         {% endfor %}
