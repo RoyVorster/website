@@ -1,19 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>Page</title>
+    <title>Roy Vorster</title>
+    <link rel="stylesheet" href="theme.css">
 </head>
 <body>
-    {{ some_text }} <br>
+    <section id="main_page">
+        <!-- Textarea -->
+        <div class="main_singleton">
+            <div class="article_meta"></div>
+            <textarea class="input_main" rows=10></textarea>
+        </div>
 
-    <form action="">
-        <label for="thing">Some text:</label><br>
-        <input type="text" id="thing" name="thing" value="lol"><br>
+        <!-- Button -->
+        <div class="main_singleton">
+            <div class="article_meta"></div>
+            <button class="input_main">Submit</button>
+        </div>
 
-        <label for="thing">Some text:</label><br>
-        <input type="text" id="thing" name="thing" value="lol"><br>
+        <!-- Notes -->
+        {% for note in notes %}
+        <div class="main_singleton">
+            <br style="clear: both;"/>
+            <div class="article_content">
+                {{ note.text }}
+            </div>
 
-        <input type="submit" value="Submit">
-    </form>
+            <div class="article_meta">
+                No. {{ loop.index }} <br>
+                {{ note.date }}
+            </div>
+        </div>
+        {% endfor %}
+    </section>
 </body>
 </html>

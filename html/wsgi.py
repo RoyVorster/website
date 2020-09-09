@@ -15,14 +15,8 @@ class application:
     def __iter__(self):
         self.start_response(self.get_status(), self.get_response_header())
 
-        html = self.render()
+        html = render()
         yield str.encode(html)
-
-    def render(self):
-        with open(get_file('index.html.j2')) as f:
-            page = Template(f.read())
-
-        return page.render(some_text='lol')
 
     def get_status(self):
         return '200 OK'
@@ -30,6 +24,31 @@ class application:
     def get_response_header(self):
         return [('Content-type','text/html')]
 
-def get_file(f_name):
+
+# Render
+def render():
+    d_name = get_file_name('articles')
+    ns = parse_notes(d_name)
+
+    with open(get_file_name('index.html.j2')) as f:
+        page = Template(f.read())
+
+    return page.render(notes=ns)
+
+def parse_notes(d_name):
+    def parse(f_name):
+        with open(f_name) as f:
+            dat = [l.strip('\n') for l in f.readlines()]
+
+        return Note(text=''.join(dat[1:]), date=dat[0])
+
+    d = filter(lambda f: os.path.isfile(os.path.join(d_name, f)), os.listdir(d_name))
+
+    d = map(lambda f: os.path.join(d_name, f), d)
+    return list(map(parse, d))
+
+
+# Quick utils
+def get_file_name(f_name):
     root = os.path.realpath(os.path.dirname(__file__))
     return os.path.join(root, f_name)
