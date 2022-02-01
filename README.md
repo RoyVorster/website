@@ -1,2 +1,2 @@
 # Personal website
-Truly spectacular web design making use of cutting-edge web technologies to enable twenty-first century user experience like no other.
+Truly spectacular web design leveraging cutting-edge web technologies to enable a reactive user experience like no other.
