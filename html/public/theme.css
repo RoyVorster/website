@@ -1,34 +1,68 @@
 body {
-  font-family: 'Source Sans Pro', sans-serif;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 10px;
+    font-family: 'Nunito', sans-serif;
+    width: 80%;
+    max-width: 500px;
+
+    margin: 0 auto;
+    padding: 10px;
 }
 
-h1, h2, h3 {
-  font-weight: 200;
+* {
+    font-weight: 300;
 }
 
-td {
-  padding: 0 20px 0 0;
+h1 {
+    font-weight: 500;
 }
 
-tr.separate > td {
-    padding-top: 10px;
+strong { 
+    font-weight: 400;
+}
+
+/* Contact */
+div.contact {
+    display: flex;
+    flex-direction: column;
+
+    margin-left: 1em;
+}
+
+div.info {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+
+    margin-top: 5px;
+}
+
+div.info > span {
+    width: 30%;
+}
+
+a {
+    color: #2667ff;
 }
 
 /* Phones */
 @media only screen and (pointer:coarse) and (hover: none) {
-  * {
-    font-size: 30px;
-  }
+    * {
+        font-size: 40px;
+    }
 
-  body {
-    max-width: 95%;
-    padding: 5px;
-  }
+    body {
+        max-width: 80%;
+        margin-left: 0.5em;
+    }
 
-  h1 {
-    font-size: 100px;
-  }
+    h1 {
+        font-size: 100px;
+    }
+
+    div.info {
+        margin-top: 0.5em;
+    }
+
+    div.info > span {
+        width: 50%;
+    }
 }
