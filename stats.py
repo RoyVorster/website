@@ -11,10 +11,6 @@ N_LOCS = 20
 # The big bad regex
 visits = re.compile(r"%s:\d{1,4} (?P<ip>(?:\d{1,3}\.){3}\d{1,3}) - - \[(?P<date>\S*):(?P<time>\d{2}:\d{2}:\d{2}) \S*\] \"GET / HTTP/1.1\" \d{1,4} \d{1,4} \"-\" \"(?P<os>.+)\"" % re.escape(URL))
 
-def ip_loc(ip):
-    loc = requests.get(f"https://geolocation-db.com/json/{ip}&position=true").json()
-    return f"({loc['city']}, {loc['country_name']})"
-
 def parse_log():
     with open(LOG_FILE, 'r') as f:
         dat = [l.strip() for l in f.readlines()]
@@ -36,14 +32,12 @@ if __name__ == '__main__':
     dts = [max([g['dt'] for g in group]) for group in ips_grouped] # Get latest date associated with IP
     oss = [[g['os'] for g in group][0] for group in ips_grouped] # Get OS associated with IP
 
-    # And sort by date
-    data = [{'dt': dt, 'ip': ip, 'os': os} for dt, ip, os in sorted(zip(dts, ips, oss))]
-
     # Just for fun, get some locations on the most recent ones
-    locs = [ip_loc(d['ip']) for d in data[-N_LOCS:]]
-    locs = [""]*(len(data) - len(locs)) + locs
+    loc_requests = [{"query": ip} for ip in ips]
+    locs = [f"({loc['country']}, {loc['city']})" for loc in requests.post("http://ip-api.com/batch", json=loc_requests).json()]
 
-    data = [{**d, 'loc': loc} for d, loc in zip(data, locs)]
+    # And sort by date
+    data = [{'dt': dt, 'ip': ip, 'os': os, 'loc': loc} for dt, ip, os, loc in sorted(zip(dts, ips, oss, locs))]
 
     # And pretty print
     s = '\n'.join([f"{d['dt'].strftime('%d %b %Y - %H:%M')}: {d['ip']} ({d['os']}) {d['loc']}" for d in data])
