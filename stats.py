@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import re, requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 LOG_FILE = ['/var/log/apache2/other_vhosts_access.log', '/var/log/apache2/other_vhosts_access.log.1']
 URL = re.escape('royvorster.nl')
@@ -19,13 +19,23 @@ def parse_log():
     matches = [m for m in matches if m is not None]
 
     # Parse date and time
-    return [{**m.groupdict(), 'dt': datetime.strptime(f"{m['date']} {m['time']}", '%d/%b/%Y %H:%M:%S')} for m in matches]
+    dts = [datetime.strptime(f"{m['date']} {m['time']}", '%d/%b/%Y %H:%M:%S') for m in matches]
+    dts = [dt + timedelta(hours=1) for dt in dts] # To my time
+
+    # Parse date and time
+    return [{**m.groupdict(), 'dt': dt} for (m, dt) in zip(matches, dts)]
+
+# Quick helper for 'subnets'
+def div_ip(ip, n=3):
+    return '.'.join(ip.split('.')[:n])
 
 if __name__ == '__main__':
     matches = parse_log()
 
     # Get unique IPs
-    ips = list(set([m['ip'] for m in matches]))
+    all_ips = [m['ip'] for m in matches]
+
+    ips = list(set(all_ips))
     ips_grouped = [[m for m in matches if m['ip'] == ip] for ip in ips]
 
     dts = [max([g['dt'] for g in group]) for group in ips_grouped] # Get latest date associated with IP
@@ -41,8 +51,14 @@ if __name__ == '__main__':
     idx_diff = len(data) - len(locs)
     data = [{**d, 'loc': "" if i <= idx_diff else locs[i - idx_diff]} for i, d in enumerate(data)]
 
+    # Add ip counts
+    data = [{**d, 'n': all_ips.count(d['ip'])} for d in data]
+
+    # And sub ip counts
+    data = [{**d, 'nsub': sum([int(ip.startswith(div_ip(d['ip']))) for ip in all_ips])} for d in data]
+
     # And pretty print
-    s = '\n'.join([f"{d['dt'].strftime('%d %b %Y - %H:%M')}: {d['ip']} ({d['os']}) {d['loc']}" for d in data])
+    s = '\n'.join([f"{d['dt'].strftime('%d %b %Y - %H:%M')}: {d['ip']} ({d['n']} hits, {d['nsub']} on subnet {div_ip(d['ip'])}), ({d['os']}) {d['loc']}" for d in data])
     s += f"\n\nTotal of {len(ips)} unique IP addresses"
 
     print(s)
