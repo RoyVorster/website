@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-import re, requests
+import re, requests, gzip
 from datetime import datetime, timedelta
+from pathlib import Path
 
-LOG_FILE = ['/var/log/apache2/other_vhosts_access.log', '/var/log/apache2/other_vhosts_access.log.1']
 URL = re.escape('royvorster.nl')
 
 # The big bad regex
@@ -10,8 +10,10 @@ visits = re.compile(r"(?:%s|www\.%s):\d{1,4} (?P<ip>(?:\d{1,3}\.){3}\d{1,3}) - -
 
 def parse_log():
     dat = []
-    for f_name in LOG_FILE:
-        with open(f_name, 'r') as f:
+    for path in Path('/var/log/apache2/').glob('other_vhosts_access*'):
+        f_open = gzip.open if path.suffix == '.gz' else open
+
+        with f_open(path, mode='rt') as f:
             dat.extend([l.strip() for l in f.readlines()])
 
     # Get matches
